@@ -51,8 +51,8 @@ B. File Directory Paths
 -----------------------
 '''
 global finpath, foutpath
-finpath = 'C:/NavSimLab/SimData/SimIn/'             # input data file path
-foutpath = 'C:/NavSimLab/SimData/SimOut/'           # output data file path
+finpath = os.path.join('SimData', 'SimIn') + os.path.sep            # input data file path
+foutpath = os.path.join('SimData', 'SimOut') + os.path.sep          # output data file path
 
 '''
 ========================================================================================================================
