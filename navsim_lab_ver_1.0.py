@@ -1,6 +1,6 @@
 __author__ = 'Leonardo D Le'
 # Created: October 10th, 2014
-# Last Update: May 27th, 2015
+# Last Update: June 6th, 2015
 
 # -*- coding: utf-8 -*-
 import os
@@ -379,16 +379,17 @@ def plot_single_error(errors, kf_sd):
     # 1.1. For North Position Error
     per[0, 0].plot(ter, errors[:, 1], 'c1', label=r'$\delta$' + '$r_N$')
     per[0, 0].hold('on')
-    per[0, 0].plot(tkf, nsig * kf_sd[:, 1], 'k', label=r'$3\sigma_N$')
-    per[0, 0].plot(tkf, -nsig * kf_sd[:, 1], 'k')
+    per[0, 0].plot(tkf, nsig * (kf_sd[:, 1] - kf_sd[0, 1]) * (r_ns + kf_sd[0, 3]), 'k', label=r'$3\sigma_N$')
+    per[0, 0].plot(tkf, -nsig * (kf_sd[:, 1] - kf_sd[0, 1]) * (r_ns + kf_sd[0, 3]), 'k')
     per[0, 0].set_title(r'$\delta$' + '$r_N$')
     per[0, 0].set_ylabel('$(m)$')
 
     # 1.2. For East Position Error
     per[0, 1].plot(ter, errors[:, 2], 'c2', label=r'$\delta$' + '$r_E$')
     per[0, 1].hold('on')
-    per[0, 1].plot(tkf, nsig * kf_sd[:, 2], 'k', label=r'$3\sigma_E$')
-    per[0, 1].plot(tkf, -nsig * kf_sd[:, 2], 'k')
+    per[0, 1].plot(tkf, nsig * (kf_sd[:, 2] - kf_sd[0, 2]) * (r_ns + kf_sd[0, 3]) * np.cos(kf_sd[0, 1]), 'k',
+                   label=r'$3\sigma_E$')
+    per[0, 1].plot(tkf, -nsig * (kf_sd[:, 2] - kf_sd[0, 2]) * (r_ns + kf_sd[0, 3]) * np.cos(kf_sd[0, 1]), 'k')
     per[0, 1].set_title(r'$\delta$' + '$r_E$')
 
     # 1.3. For Down Position Error
@@ -478,16 +479,19 @@ def plot_dual_error(lc_errors, lc_kf_sd, tc_errors, tc_kf_sd):
     # 1.1. For North Position Error
     lc_per[0, 0].plot(ter, lc_errors[:, 1], 'c1', label=r'$\delta$' + '$r_N$')
     lc_per[0, 0].hold('on')
-    lc_per[0, 0].plot(tkf, nsig * lc_kf_sd[:, 1], 'k', label=r'$3\sigma_N$')
-    lc_per[0, 0].plot(tkf, -nsig * lc_kf_sd[:, 1], 'k')
+    lc_per[0, 0].plot(tkf, nsig * (lc_kf_sd[:, 1] - lc_kf_sd[0, 1]) * (lc_r_ns + lc_kf_sd[0, 3]), 'k',
+                      label=r'$3\sigma_N$')
+    lc_per[0, 0].plot(tkf, -nsig * (lc_kf_sd[:, 1] - lc_kf_sd[0, 1]) * (lc_r_ns + lc_kf_sd[0, 3]), 'k')
     lc_per[0, 0].set_title('$LC$' + ' ' + r'$\delta$' + '$r_N$')
     lc_per[0, 0].set_ylabel('$(m)$')
 
     # 1.2. For East Position Error
     lc_per[0, 1].plot(ter, lc_errors[:, 2], 'c2', label=r'$\delta$' + '$r_E$')
     lc_per[0, 1].hold('on')
-    lc_per[0, 1].plot(tkf, nsig * lc_kf_sd[:, 2], 'k', label=r'$3\sigma_E$')
-    lc_per[0, 1].plot(tkf, -nsig * lc_kf_sd[:, 2], 'k')
+    lc_per[0, 1].plot(tkf, nsig * (lc_kf_sd[:, 2] - lc_kf_sd[0, 2]) * (lc_r_ns + lc_kf_sd[0, 3]) *
+                      np.cos(lc_kf_sd[0, 1]), 'k', label=r'$3\sigma_E$')
+    lc_per[0, 1].plot(tkf, -nsig * (lc_kf_sd[:, 2] - lc_kf_sd[0, 2]) * (lc_r_ns + lc_kf_sd[0, 3]) *
+                      np.cos(lc_kf_sd[0, 1]), 'k')
     lc_per[0, 1].set_title('$LC$' + ' ' + r'$\delta$' + '$r_E$')
 
     # 1.3. For Down Position Error
@@ -559,16 +563,19 @@ def plot_dual_error(lc_errors, lc_kf_sd, tc_errors, tc_kf_sd):
     # 1.1. For North Position Error
     tc_per[0, 0].plot(ter, tc_errors[:, 1], 'c10', label=r'$\delta$' + '$r_N$')
     tc_per[0, 0].hold('on')
-    tc_per[0, 0].plot(tkf, nsig * tc_kf_sd[:, 1], 'k', label=r'$3\sigma_N$')
-    tc_per[0, 0].plot(tkf, -nsig * tc_kf_sd[:, 1], 'k')
+    tc_per[0, 0].plot(tkf, nsig * (tc_kf_sd[:, 1] - tc_kf_sd[0, 1]) * (tc_r_ns + tc_kf_sd[0, 3]), 'k',
+                      label=r'$3\sigma_N$')
+    tc_per[0, 0].plot(tkf, -nsig * (tc_kf_sd[:, 1] - tc_kf_sd[0, 1]) * (tc_r_ns + tc_kf_sd[0, 3]), 'k')
     tc_per[0, 0].set_title('$TC$' + ' ' + r'$\delta$' + '$r_N$')
     tc_per[0, 0].set_ylabel('$(m)$')
 
     # 1.2. For East Position Error
     tc_per[0, 1].plot(ter, tc_errors[:, 2], 'c11', label=r'$\delta$' + '$r_E$')
     tc_per[0, 1].hold('on')
-    tc_per[0, 1].plot(tkf, nsig * tc_kf_sd[:, 2], 'k', label=r'$3\sigma_E$')
-    tc_per[0, 1].plot(tkf, -nsig * tc_kf_sd[:, 2], 'k')
+    tc_per[0, 1].plot(tkf, nsig * (tc_kf_sd[:, 2] - tc_kf_sd[0, 2]) * (tc_r_ns + tc_kf_sd[0, 3]) *
+                      np.cos(tc_kf_sd[0, 1]), 'k', label=r'$3\sigma_E$')
+    tc_per[0, 1].plot(tkf, -nsig * (tc_kf_sd[:, 2] - tc_kf_sd[0, 2]) * (tc_r_ns + tc_kf_sd[0, 3]) *
+                      np.cos(tc_kf_sd[0, 1]), 'k')
     tc_per[0, 1].set_title('$TC$' + ' ' + r'$\delta$' + '$r_E$')
 
     # 1.3. For Down Position Error
@@ -1403,7 +1410,7 @@ class GnssConfigStruct:
         self.no_sat = np.nan
         self.r_os = np.nan
         self.inclination = np.nan
-        self.const_delta_lambda = np.nan
+        self.const_delta_lon = np.nan
         self.const_t_offset = np.nan
         self.mask_angle = np.nan
         self.SIS_err_SD = np.nan
@@ -1607,7 +1614,7 @@ def gnss_configuration(frequence, constellation, tow):
         gnss_config.no_sat = 32                                 # Number of satellites in constellation
         gnss_config.r_os = 2.656175e+07                         # Orbital radius of satellites (m)
         gnss_config.inclination = 55.0                          # Inclination angle of satellites (deg)
-        gnss_config.const_delta_lambda = 0.0                    # Longitude offset of constellation (deg)
+        gnss_config.const_delta_lon = 0.0                    # Longitude offset of constellation (deg)
         gnss_config.const_t_offset = tow[0, 0]                  # Timing offset of constellation (s)
         gnss_config.mask_angle = 10.0                           # Mask angle (deg)
         gnss_config.SIS_err_SD = 1.0                            # Signal in space error SD (m)
@@ -2007,19 +2014,40 @@ def skew_sym(vector):
 
 
 '''
+    -----------------------------------------
+    6. Calculate the Radii of Earth Curvature
+    -----------------------------------------
+'''
+
+
+def radii_of_curv(latitude):
+
+    # Calculate meridian radius of curvature
+    temp = 1 - (ecc_o * np.sin(latitude)) ** 2
+    r_ns = R_0 * (1 - ecc_o ** 2) / (temp ** 1.5)
+
+    # Calculate transverse radius of curvature
+    r_ew = R_0 / np.sqrt(temp)
+
+    return r_ns, r_ew
+
+# End of Calculate Radii of Earth Curvature
+
+
+'''
     --------------------------------------------------------------
-    6. Convert Position, Velocity, and CTM in NED to Those in ECEF
+    7. Convert Position, Velocity, and CTM in NED to Those in ECEF
     --------------------------------------------------------------
 '''
 
 
-def lla_to_ecef(lat_b, lambda_b, h_b, v_eb_n, c_b_n_matrix):
+def lla_to_ecef(lat_b, lon_b, h_b, v_eb_n, c_b_n_matrix):
 
     # Calculate transverse radius of curvature
-    r_ew = R_0 / np.sqrt(1 - (ecc_o * np.sin(lat_b)) ** 2)
+    [r_ns, r_ew] = radii_of_curv(lat_b)
 
     # Calculate ECEF to NED CTM using ECEF_to_NED_CTM()
-    [c_e_n_matrix, trig] = ecef_to_ned_ctm(lat_b, lambda_b, trig='yes')
+    [c_e_n_matrix, trig] = ecef_to_ned_ctm(lat_b, lon_b, trig='yes')
 
     # Convert position
     cos_lat = trig[0]
@@ -2043,7 +2071,7 @@ def lla_to_ecef(lat_b, lambda_b, h_b, v_eb_n, c_b_n_matrix):
 
 '''
     --------------------------------------------------------------
-    7. Convert Position, Volocity, and CTM in ECEF to Those in NED
+    8. Convert Position, Volocity, and CTM in ECEF to Those in NED
     --------------------------------------------------------------
 '''
 
@@ -2051,7 +2079,7 @@ def lla_to_ecef(lat_b, lambda_b, h_b, v_eb_n, c_b_n_matrix):
 def ecef_to_lla(r_eb_e, v_eb_e, c_b_e_matrix):
 
     # Compute the Longitude is straight forward
-    lambda_b = np.arctan2(r_eb_e[1, 0], r_eb_e[0, 0])
+    lon_b = np.arctan2(r_eb_e[1, 0], r_eb_e[0, 0])
 
     # Convert position using Borkowski closed-form exact solution in order to avoid while loop never exits. If doing
     # this by iteration, we can't ensure while loop convergence. Refer to Appendix C (Paul Grove) or Borkowski, K.M.,
@@ -2072,7 +2100,7 @@ def ecef_to_lla(r_eb_e, v_eb_e, c_b_e_matrix):
                                                 np.sign(r_eb_e[2, 0]) * R_0 * np.sqrt(1 - ecc_o ** 2)) * np.sin(lat_b)
 
     # Calculate ECEF to NED coordinate transformation matrix
-    c_e_n_matrix = ecef_to_ned_ctm(lat_b, lambda_b, trig='no')
+    c_e_n_matrix = ecef_to_ned_ctm(lat_b, lon_b, trig='no')
 
     # Transform velocity
     v_eb_n = c_e_n_matrix * v_eb_e
@@ -2080,25 +2108,25 @@ def ecef_to_lla(r_eb_e, v_eb_e, c_b_e_matrix):
     # Transform attitude
     c_b_n_matrix = c_e_n_matrix * c_b_e_matrix
 
-    return lat_b, lambda_b, h_b, v_eb_n, c_b_n_matrix
+    return lat_b, lon_b, h_b, v_eb_n, c_b_n_matrix
 
 # End of Converting Position, Velocity, and CTM from ECEF to NED
 
 
 '''
     ---------------------------------
-    8. Convert Position in LLA to XYZ
+    9. Convert Position in LLA to XYZ
     ---------------------------------
 '''
 
 
-def lla_to_xyz(lat_b, lambda_b, h_b):
+def lla_to_xyz(lat_b, lon_b, h_b):
 
     # Calculate transverse radius of curvature
     r_ew = R_0 / np.sqrt(1 - (ecc_o * np.sin(lat_b)) ** 2)
 
     # Calculate ECEF to NED CTM using ECEF_to_NED_CTM()
-    [c_e_n_matrix, trig] = ecef_to_ned_ctm(lat_b, lambda_b, trig='yes')
+    [c_e_n_matrix, trig] = ecef_to_ned_ctm(lat_b, lon_b, trig='yes')
 
     # Convert position
     cos_lat = trig[0]
@@ -2115,22 +2143,22 @@ def lla_to_xyz(lat_b, lambda_b, h_b):
 
 
 '''
-    ---------------------------------
-    9. Convert Position in XYZ to NED
-    ---------------------------------
+    ----------------------------------
+    10. Convert Position in XYZ to NED
+    ----------------------------------
 '''
 
 
-def xyz_to_ned(r_eb_e, lat_b_ref, lambda_b_ref, h_b_ref):
+def xyz_to_ned(r_eb_e, lat_b_ref, lon_b_ref, h_b_ref):
 
     # Convert referenced position in LLA to ECEF
-    r_eb_e_ref = lla_to_xyz(lat_b_ref, lambda_b_ref, h_b_ref)
+    r_eb_e_ref = lla_to_xyz(lat_b_ref, lon_b_ref, h_b_ref)
 
     # Compute the relative position vector in ECEF
     delta_r_eb_e = r_eb_e - r_eb_e_ref
 
     # Calculate ECEF to NED CTM using ECEF_to_NED_CTM()
-    c_e_n_matrix = ecef_to_ned_ctm(lat_b_ref, lambda_b_ref, trig='no')
+    c_e_n_matrix = ecef_to_ned_ctm(lat_b_ref, lon_b_ref, trig='no')
 
     # Convert the relative position vector in ECEF to NED
     r_eb_ned = c_e_n_matrix*delta_r_eb_e
@@ -2139,43 +2167,88 @@ def xyz_to_ned(r_eb_e, lat_b_ref, lambda_b_ref, h_b_ref):
 
 # End of XYZ to NED
 
+
 '''
-    --------------------------------------------------------------
-    10. Convert Position, Volocity, and CTM in ECEF to Those in NED
-    --------------------------------------------------------------
+    ----------------------------------
+    11. Calculate Output Errors in NED
+    ----------------------------------
 '''
 
 
-def ecef_to_ned_ekfsd(lat_b_ref, lambda_b_ref, h_b_ref, rsd_eb_e, vsd_eb_e, c_b_e_matrix):
+def cal_err_ned(est_lat_b, est_lon_b, est_alt_b, est_v_eb_n, est_ctm_b_n, true_lat_b, true_lon_b,
+                true_alt_b, true_v_eb_n, true_ctm_b_n):
 
-    # Transform position using xyz_to_ned
-    rsd_eb_n = xyz_to_ned(rsd_eb_e, lat_b_ref, lambda_b_ref, h_b_ref)
+    # Earth's radii
+    [r_ns, r_ew] = radii_of_curv(true_lat_b)
+
+    # Position error calculation
+    delta_r_eb_n = np.nan * np.ones((3, 1))
+    delta_r_eb_n[0, 0] = (est_lat_b - true_lat_b) * (r_ns + true_alt_b)
+    delta_r_eb_n[1, 0] = (est_lon_b - true_lon_b) * (r_ew + true_alt_b) * np.cos(true_lat_b)
+    delta_r_eb_n[2, 0] = -(est_alt_b - true_alt_b)
+
+    # Velocity error calculation
+    delta_v_eb_n = est_v_eb_n - true_v_eb_n
+
+    # Attitude error calculation
+    delta_ctm_b_n = est_ctm_b_n * true_ctm_b_n.T
+    eul_err_nb_n = -ctm_to_euler(delta_ctm_b_n)
+
+    return delta_r_eb_n, delta_v_eb_n, eul_err_nb_n
+
+# End of Calculating Errors in NED
+
+
+'''
+    -----------------------------------------------------------------------------
+    12. Convert Position and Volocity Standard Deviations in ECEF to Those in NED
+    -----------------------------------------------------------------------------
+'''
+
+
+def ekfsd_ecef_to_lla(lat_b_ref, lon_b_ref, alt_b_ref, rsd_eb_e, vsd_eb_e):
+
+    # Earth's radii
+    [r_ns, r_ew] = radii_of_curv(lat_b_ref)
+
+    # Jacobian of xyz to lla
+    t_r_p_matrix = np.matrix([[1.0/(r_ns + alt_b_ref),                    0.0,                      0.0],
+                              [0.0,                    1.0/(r_ew + alt_b_ref) * np.cos(lat_b_ref),  0.0],
+                              [0.0,                                       0.0,                     -1.0]])
 
     # Calculate ECEF to NED coordinate transformation matrix
-    c_e_n_matrix = ecef_to_ned_ctm(lat_b_ref, lambda_b_ref, trig='no')
+    [c_e_n_matrix, trig] = ecef_to_ned_ctm(lat_b_ref, lon_b_ref, trig='yes')
 
-    # Transform velocity using (2.73)
-    vsd_eb_n = c_e_n_matrix * vsd_eb_e
+    # Transform position
+    rsd_eb_n = t_r_p_matrix * c_e_n_matrix * rsd_eb_e
 
-    # Transform attitude using (2.15)
-    c_b_n_matrix = c_e_n_matrix * c_b_e_matrix
+    # The down-component error
+    term_1 = rsd_eb_e[2, 0] / trig[1]
+    term_2 = np.sqrt(rsd_eb_e[0, 0] ** 2 + rsd_eb_e[1, 0] ** 2) / trig[0]
+    rsd_eb_n[2, 0] += term_1 + term_2
 
-    return rsd_eb_n, vsd_eb_n, c_b_n_matrix
+    # ECEF to NED coordinate transformation matrix
+    delta_c_e_n_matrix = ecef_to_ned_ctm(rsd_eb_n[0, 0], rsd_eb_n[1, 0], trig='no')
+
+    # Transform velocity
+    vsd_eb_n = delta_c_e_n_matrix * vsd_eb_e
+
+    return rsd_eb_n, vsd_eb_n
 
 # End of Converting Position, Velocity, and CTM from ECEF to NED
 
 
 '''
-    -------------------------------------------------
-    11. Convert Position and Velocity from ECEF to NED
-    -------------------------------------------------
+    --------------------------------------------------
+    13. Convert Position and Velocity from ECEF to NED
+    --------------------------------------------------
 '''
 
 
 def pv_ecef_to_lla(r_eb_e, v_eb_e):
 
     # Compute the Longitude
-    lambda_b = np.arctan2(r_eb_e[1, 0], r_eb_e[0, 0])
+    lon_b = np.arctan2(r_eb_e[1, 0], r_eb_e[0, 0])
 
     # Convert position using Borkowski closed-form exact solution in order to avoid while loop never exits. If doing
     # this by iteration, we can't ensure while loop convergence. Refer to Appendix C (Paul Grove) or Borkowski, K.M.,
@@ -2196,19 +2269,19 @@ def pv_ecef_to_lla(r_eb_e, v_eb_e):
                                                    np.sqrt(1 - ecc_o ** 2)) * np.sin(lat_b)
 
     # Calculate ECEF to NED coordinate transformation matrix
-    c_e_n_matrix = ecef_to_ned_ctm(lat_b, lambda_b, trig='no')
+    c_e_n_matrix = ecef_to_ned_ctm(lat_b, lon_b, trig='no')
 
     # Transform velocity
     v_eb_n = c_e_n_matrix * v_eb_e
 
-    return lat_b, lambda_b, h_b, v_eb_n
+    return lat_b, lon_b, h_b, v_eb_n
 
 # End of Converting Position an Velocity from ECEF to NED
 
 
 '''
     ------------------------------
-    12. Initialized Attitude in NED
+    14. Initialized Attitude in NED
     ------------------------------
 '''
 
@@ -2225,29 +2298,8 @@ def init_ned_att(c_b_n_matrix, eul_err_nb_n):
 
 
 '''
-    ------------------------------------------
-    13. Calculate the Radii of Earth Curvature
-    ------------------------------------------
-'''
-
-
-def radii_of_curv(latitude):
-
-    # Calculate meridian radius of curvature
-    temp = 1 - (ecc_o * np.sin(latitude)) ** 2
-    r_ns = R_0 * (1 - ecc_o ** 2) / (temp ** 1.5)
-
-    # Calculate transverse radius of curvature
-    r_ew = R_0 / np.sqrt(temp)
-
-    return r_ns, r_ew
-
-# End of Calculate Radii of Earth Curvature
-
-
-'''
     ------------------------------------------------------------
-    14. Progress Bar: Displays or Updates a Console Progress Bar
+    15. Progress Bar: Displays or Updates a Console Progress Bar
     ------------------------------------------------------------
 '''
 
@@ -2268,7 +2320,7 @@ def progressbar(progress):
 
 '''
     ----------------------------------------------------------
-    15. Calculate the Earth Gravitational Force Vector in ECEF
+    16. Calculate the Earth Gravitational Force Vector in ECEF
     ----------------------------------------------------------
 '''
 
@@ -2305,7 +2357,7 @@ def gravity_ecef(r_eb_e):
 
 '''
     -------------------------------------------
-    16. Earth Rotation Over the Update Interval
+    17. Earth Rotation Over the Update Interval
     -------------------------------------------
 '''
 
@@ -2325,7 +2377,7 @@ def c_earth(tau_i):
 
 '''
     -----------------------------------------------------------------------
-    17. Solve Kepler's Equation for Eccentric Anomaly Using Newton's Method
+    18. Solve Kepler's Equation for Eccentric Anomaly Using Newton's Method
     -----------------------------------------------------------------------
 '''
 
@@ -2358,7 +2410,7 @@ def kepler(Mk, ecc, tol):
 
 '''
     ---------------------------
-    18. Determine the Leap Year
+    19. Determine the Leap Year
     ---------------------------
 '''
 
@@ -2384,7 +2436,7 @@ def is_leap_year(yyyy):
 
 '''
     --------------------------------------------------
-    19. Calculate the Number of Days between Two Dates
+    20. Calculate the Number of Days between Two Dates
     --------------------------------------------------
 '''
 
@@ -2457,7 +2509,7 @@ def num_days(yyyy1, mm1, dd1, yyyy2, mm2, dd2):
 
 '''
     ------------------------------------------------------
-    20. Calculate the Number of Days of the Year of a Date
+    21. Calculate the Number of Days of the Year of a Date
     ------------------------------------------------------
 '''
 
@@ -2483,7 +2535,7 @@ def days_of_year(yyyy, mm, dd):
 
 '''
     --------------------------------------------------------
-    21. Convert GPS TOW to UTC Time (Day/Hour/Minute/Second)
+    22. Convert GPS TOW to UTC Time (Day/Hour/Minute/Second)
     --------------------------------------------------------
 '''
 
@@ -2515,7 +2567,7 @@ def tow_to_utc(tow):
 
 '''
     ----------------------------------------------------------------
-    22. Determine Flgith Duration Based on TOWs from the Flight Data
+    23. Determine Flgith Duration Based on TOWs from the Flight Data
     ----------------------------------------------------------------
 '''
 
@@ -2540,6 +2592,8 @@ def flight_duration(towo, towf):
 ========================================================================================================================
                                                     MAIN FUNCTIONS
 ========================================================================================================================
+'''
+'''
     ----------------------------------------------------------------------------------
     1. Generate Satellite Positions and Velocities by Simulating Virtual Constellation
     ----------------------------------------------------------------------------------
@@ -2571,7 +2625,7 @@ def sat_pv_sim(t_i, gnss_config):
         r_os_o = gnss_config.r_os * np.matrix([np.cos(u_os_o), np.sin(u_os_o), 0]).T
 
         # Longitude of the ascending node
-        omega = (np.pi * np.mod(i + 1, 6) / 3) + d2r * gnss_config.const_delta_lambda - OMEGA_ie * tgps
+        omega = (np.pi * np.mod(i + 1, 6) / 3) + d2r * gnss_config.const_delta_lon - OMEGA_ie * tgps
 
         # ECEF Satellite Position
         sat_r_es_e[i, 0] = r_os_o[0, 0] * np.cos(omega) - r_os_o[1, 0] * np.cos(inclination) * np.sin(omega)
@@ -2745,10 +2799,10 @@ def sat_pv_ephem(ephem, gnss_config, t_i, tol):
 '''
 
 
-def init_gnss_bias_sim(sat_r_es_e, r_ea_e, lat_a, lambda_a, gnss_config):
+def init_gnss_bias_sim(sat_r_es_e, r_ea_e, lat_a, lon_a, gnss_config):
 
     # Calculate ECEF to NED CTM using ECEF_to_NED_CTM()
-    ctm_e_n = ecef_to_ned_ctm(lat_a, lambda_a, trig='no')
+    ctm_e_n = ecef_to_ned_ctm(lat_a, lon_a, trig='no')
 
     # Loop satellites
     gnss_biases = np.nan * np.matrix(np.ones((gnss_config.no_sat, 1)))
@@ -2823,8 +2877,8 @@ def init_gnss_bias_ephem(t_i, doy, ephem, iono_alpha, iono_beta, lat_a, lon_a, a
             L_I_s = 1.307
 
         # 2. Calculate the sub-ionospheric longitude and the geomagnetic latitude
-        lambda_I_s = lon_a + Psi_E_s*np.sin(azimuth)/np.cos(L_I_s)                  # (rad)
-        L_m_s = L_I_s + (0.064*np.pi)*np.cos(lambda_I_s - 1.617*np.pi)              # (rad)
+        lon_I_s = lon_a + Psi_E_s*np.sin(azimuth)/np.cos(L_I_s)                  # (rad)
+        L_m_s = L_I_s + (0.064*np.pi)*np.cos(lon_I_s - 1.617*np.pi)              # (rad)
 
         # 3.1 Compute the time of flight, delta_t = t_gps - t_oe
         delt_t_s = tgps - ephem[i, 8]                                               # (sec)
@@ -2835,7 +2889,7 @@ def init_gnss_bias_ephem(t_i, doy, ephem, iono_alpha, iono_beta, lat_a, lon_a, a
         elif delt_t_s <= 0:
             delt_t_s += 8.64E+04
         # 3.3 Compute the time at the sub-ionopsheric point
-        t_I_s = delt_t_s + ((4.32E+04)/np.pi)*lambda_I_s                            # (sec)
+        t_I_s = delt_t_s + ((4.32E+04)/np.pi)*lon_I_s                            # (sec)
 
         # 4.1 Calculate PER
         PER = 0.0
@@ -3056,11 +3110,17 @@ def gnss_meas_gen_ephem(t_i, sat_r_es_e, sat_v_es_e, r_ea_e, lat_a, lon_a, v_ea_
             # Calculate pseudo-range measurement: geometric range + SV clock errors + I and T delay + Epsilon
             delta_t = tgps - sv_clock[i, 3]        # delta_t = tgps - toc (sec)
 
+            # Week crossover correction on t_oc
+            if delta_t > 3.024E+05:
+                delta_t -= 6.048E+05
+            elif delta_t < -3.024E+05:
+                delta_t += 6.048E+05
+
             # Inter-signal timing biases for GPS L1 band signal, (sec)
             delta_a_is_L1 = (gnss_config.SIS_err_SD/c)*rnd.randn() - sv_clock[i, 4]
 
             # SV clock bias, (m)
-            sv_clock_bias = delta_a_is_L1 * c
+            sv_clock_bias = (sv_clock[i, 1] * delta_t + delta_a_is_L1) * c
 
             # Relativistic correction, (m)
             rel_corr = -2.0*(sat_r_es_e[i, :]*sat_v_es_e[i, :].T)/c
@@ -3231,35 +3291,6 @@ def gnss_ls_pos_vel(gnss_meas, no_gnss_meas, pred_r_ea_e, pred_v_ea_e):
     return est_r_ea_e, est_v_ea_e, est_clock
 
 # End of Computing GNSS Least Square Positions and Velocities
-
-
-'''
-    ---------------------------------
-    8. Calculate Output Errors in NED
-    ---------------------------------
-'''
-
-
-def cal_err_ned(est_lat_b, est_lambda_b, est_alt_b, est_v_eb_n, est_ctm_b_n, true_lat_b, true_lambda_b,
-                true_alt_b, true_v_eb_n, true_ctm_b_n):
-
-    # Position error calculation
-    delta_r_eb_n = np.nan * np.ones((3, 1))
-    [r_ns, r_ew] = radii_of_curv(true_lat_b)
-    delta_r_eb_n[0, 0] = (est_lat_b - true_lat_b) * (r_ns + true_alt_b)
-    delta_r_eb_n[1, 0] = (est_lambda_b - true_lambda_b) * (r_ew + true_alt_b) * np.cos(true_lat_b)
-    delta_r_eb_n[2, 0] = -(est_alt_b - true_alt_b)
-
-    # Velocity error calculation
-    delta_v_eb_n = est_v_eb_n - true_v_eb_n
-
-    # Attitude error calculation
-    delta_ctm_b_n = est_ctm_b_n * true_ctm_b_n.T
-    eul_err_nb_n = -ctm_to_euler(delta_ctm_b_n)
-
-    return delta_r_eb_n, delta_v_eb_n, eul_err_nb_n
-
-# End of Calculating Errors in NED
 
 
 '''
@@ -3796,8 +3827,15 @@ def lc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
     output_kf_sd[0, 0] = old_t
     eig_value = lina.eigvals(p_matrix)
     for i in xrange(0, 15):
-        output_kf_sd[0, i + 1] = np.sqrt(eig_value[i])
+        output_kf_sd[0, i + 1] = np.sqrt(abs(eig_value[i]))
     # End of For Loop
+
+    # Convert the standard deviations to LLA
+    [r_temp, v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, output_kf_sd[0, 1:4].T,
+                                         output_kf_sd[0, 4:7].T)
+
+    output_kf_sd[0, 1:4] = r_temp.T
+    output_kf_sd[0, 4:7] = v_temp.T
 
     # 20. Initialize GNSS model timing
     t_last_gnss = old_t
@@ -3931,8 +3969,16 @@ def lc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
             out_kf_sd_new[0:gnss_epoch - 1, 1:16] = output_kf_sd[0:gnss_epoch - 1, 1:16]
             eig_value = lina.eigvals(p_matrix)
             for i in xrange(0, 15):
-                out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(eig_value[i])
+                out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(abs(eig_value[i]))
             # End of For out_kf_sd update
+
+            # Convert the standard deviations to LLA
+            [r_temp, v_temp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, out_kf_sd_new[gnss_epoch - 1, 1:4].T,
+                                  out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+
+            out_kf_sd_new[gnss_epoch - 1, 1:4] = r_temp.T
+            out_kf_sd_new[gnss_epoch - 1, 4:7] = v_temp.T
 
             output_kf_sd = out_kf_sd_new
 
@@ -4284,8 +4330,15 @@ def tc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
     output_kf_sd[0, 0] = old_t
     eig_value = lina.eigvals(p_matrix)
     for i in xrange(0, 17):
-        output_kf_sd[0, i + 1] = np.sqrt(eig_value[i])
+        output_kf_sd[0, i + 1] = np.sqrt(abs(eig_value[i]))
     # End of For Loop
+
+    # Convert the standard deviations to LLA
+    [r_temp, v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, output_kf_sd[0, 1:4].T,
+                                         output_kf_sd[0, 4:7].T)
+
+    output_kf_sd[0, 1:4] = r_temp.T
+    output_kf_sd[0, 4:7] = v_temp.T
 
     # 20. Initialize GNSS model timing
     t_last_gnss = old_t
@@ -4417,8 +4470,16 @@ def tc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
             out_kf_sd_new[0:gnss_epoch - 1, 1:18] = output_kf_sd[0:gnss_epoch - 1, 1:18]
             eig_value = lina.eigvals(p_matrix)
             for i in xrange(0, 17):
-                out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(eig_value[i])
+                out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(abs(eig_value[i]))
             # End of For out_kf_sd update
+
+            # Convert the standard deviations to LLA
+            [r_temp, v_temp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, out_kf_sd_new[gnss_epoch - 1, 1:4].T,
+                                  out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+
+            out_kf_sd_new[gnss_epoch - 1, 1:4] = r_temp.T
+            out_kf_sd_new[gnss_epoch - 1, 4:7] = v_temp.T
 
             output_kf_sd = out_kf_sd_new
 
@@ -4649,16 +4710,30 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
     lc_output_kf_sd[0, 0] = old_t
     lc_eig_value = lina.eigvals(lc_p_matrix)
     for i in xrange(0, 15):
-        lc_output_kf_sd[0, i + 1] = np.sqrt(lc_eig_value[i])
+        lc_output_kf_sd[0, i + 1] = np.sqrt(abs(lc_eig_value[i]))
     # End of For Loop
+
+    # Convert the standard deviations to LLA
+    [lc_r_temp, lc_v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, lc_output_kf_sd[0, 1:4].T,
+                                               lc_output_kf_sd[0, 4:7].T)
+
+    lc_output_kf_sd[0, 1:4] = lc_r_temp.T
+    lc_output_kf_sd[0, 4:7] = lc_v_temp.T
 
     # 21.2 Tightly coupled EKF
     tc_output_kf_sd = np.nan * np.matrix(np.ones((1, 18)))
     tc_output_kf_sd[0, 0] = old_t
     tc_eig_value = lina.eigvals(tc_p_matrix)
     for i in xrange(0, 17):
-        tc_output_kf_sd[0, i + 1] = np.sqrt(tc_eig_value[i])
+        tc_output_kf_sd[0, i + 1] = np.sqrt(abs(tc_eig_value[i]))
     # End of For Loop
+
+    # Convert the standard deviations to LLA
+    [tc_r_temp, tc_v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, tc_output_kf_sd[0, 1:4].T,
+                                               tc_output_kf_sd[0, 4:7].T)
+
+    tc_output_kf_sd[0, 1:4] = tc_r_temp.T
+    tc_output_kf_sd[0, 4:7] = tc_v_temp.T
 
     # 22. Initialize GNSS model timing
     t_last_gnss = old_t
@@ -4831,8 +4906,16 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
             lc_out_kf_sd_new[0:gnss_epoch - 1, 1:16] = lc_output_kf_sd[0:gnss_epoch - 1, 1:16]
             lc_eig_value = lina.eigvals(lc_p_matrix)
             for i in xrange(0, 15):
-                lc_out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(lc_eig_value[i])
+                lc_out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(abs(lc_eig_value[i]))
             # End of For out_kf_sd update
+
+            # Convert the standard deviations to LLA
+            [lc_r_temp, lc_v_temp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, lc_out_kf_sd_new[gnss_epoch - 1, 1:4].T,
+                                  lc_out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+
+            lc_out_kf_sd_new[gnss_epoch - 1, 1:4] = lc_r_temp.T
+            lc_out_kf_sd_new[gnss_epoch - 1, 4:7] = lc_v_temp.T
 
             lc_output_kf_sd = lc_out_kf_sd_new
 
@@ -4843,8 +4926,16 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
             tc_out_kf_sd_new[0:gnss_epoch - 1, 1:18] = tc_output_kf_sd[0:gnss_epoch - 1, 1:18]
             tc_eig_value = lina.eigvals(tc_p_matrix)
             for i in xrange(0, 17):
-                tc_out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(tc_eig_value[i])
+                tc_out_kf_sd_new[gnss_epoch - 1, i + 1] = np.sqrt(abs(tc_eig_value[i]))
             # End of For out_kf_sd update
+
+            # Convert the standard deviations to LLA
+            [tc_r_temp, tc_v_temp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, tc_out_kf_sd_new[gnss_epoch - 1, 1:4].T,
+                                  tc_out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+
+            tc_out_kf_sd_new[gnss_epoch - 1, 1:4] = tc_r_temp.T
+            tc_out_kf_sd_new[gnss_epoch - 1, 4:7] = tc_v_temp.T
 
             tc_output_kf_sd = tc_out_kf_sd_new
 
@@ -5093,15 +5184,54 @@ def nav_sim_driver(fin_data, fin_nav, DyOM, doy, imugrade, constellation, freque
 #                                                  SET UP THE SIMULATION
 # **********************************************************************************************************************
 
-# 1. Specify the flight data file and the ephemeris file
-data_fname = raw_input('Enter the flight data file name (.mat file): ')
-nav_fname = raw_input('\nEnter the navigation message file name (.xxn file, include the file extension): ')
-nav_words = nav_fname.split('.')
-while len(nav_words) != 2:
+# 1. Select the simulation type
+print '\nNavSim Lab has two simulation types:\n\n' \
+      '     Type #1 == "simulation": performs the flight by the simulating the virtual GNSS constellation and the ' \
+      'virtual IMU model based on the flight trajectory, the vehicle dynamics, the vehicle attitude from the '\
+      'flight data.\n\n' \
+      '     Type #2 == "play back": performs the flight by playing back the entire flight profile in which the GNSS ' \
+      'measurements are calculated using the real ephemeris, the real specific forces and the real angular rates ' \
+      'from the flight data.\n'
+
+sim_type = raw_input('Please select the simulation type by entering either "simulation" or "play back": ')
+while sim_type != 'simulation' and sim_type != 'play back':
+    sim_type = raw_input('\nPlease select the simulation type by entering either "simulation" or "play back": ')
+
+# 2. Specify the simulation mode
+print '\nEach simulation type has two modes:\n\n' \
+      '     Mode #1 == "stand alone": performs either the "loosely coupled" integration ' \
+      'or the "tightly coupled" integration.\n\n' \
+      '     Mode #2 == "dual": performs both the "loosely coupled" integration and ' \
+      'the "tightly coupled" integration simultaneously.\n'
+
+sim_mode = raw_input('Please select the simulation mode by entering either "alone" or "dual": ')
+while sim_mode != 'alone' and sim_mode != 'dual':
+    sim_mode = raw_input('\nPlease select the simulation mode by entering either "alone" or "dual": ')
+
+# 3. Specify the tightness
+if sim_mode == 'alone':
+    print '\nThere are two integration schemes in the "stand-alone" mode:\n\n' \
+          '     Scheme #1 == "Loose": to loosely integrate the INS and the GNSS solutions.\n\n' \
+          '     Scheme #2 == "Tight": to tightly integrate the INS and the GNSS solutions.\n'
+    scheme = raw_input('Specify your choice by entering either "loose" or "tight": ')
+    while scheme != 'loose' and scheme != 'tight':
+        scheme = raw_input('\nSpecify your choice by entering either "loose" or "tight": ')
+elif sim_mode == 'dual':
+    scheme = 'loose'  # default integration scheme
+
+# 4. Specify the flight data file and the ephemeris file
+if sim_type == 'play back':
+    data_fname = raw_input('Enter the flight data file name (.mat file): ')
     nav_fname = raw_input('\nEnter the navigation message file name (.xxn file, include the file extension): ')
     nav_words = nav_fname.split('.')
+    while len(nav_words) != 2:
+        nav_fname = raw_input('\nEnter the navigation message file name (.xxn file, include the file extension): ')
+        nav_words = nav_fname.split('.')
+elif sim_type == 'simulation':
+    nav_fname = 'none.12n'
+    data_fname = raw_input('Enter the flight data file name (.mat file): ')
 
-# 2. Specify the date of the flight
+# 5. Specify the date of the flight
 date = raw_input('\nPlease enter the date when the flight test was carried out (mm/dd/yyyy): ')
 num_chars = len(date)
 while num_chars != 10:
@@ -5115,54 +5245,19 @@ year = int(numbers[2])
 # Calculate the number of days of the year
 num_doy = days_of_year(year, month, num_dom)
 
-# 3. Specify the grade of the IMU
+# 6. Specify the grade of the IMU
 imu_grade = raw_input('\nPlease specify the grade of the IMU ("aviation", "consumer", and "tactical"): ')
 while imu_grade != 'aviation' and imu_grade != 'consumer' and imu_grade != 'tactical':
     imu_grade = raw_input('\nPlease specify the grade of the IMU ("aviation", "consumer", and "tactical"): ')
 
-# 4. Specify the GNSS constellation
+# 7. Specify the GNSS constellation
 print '\nCurrently, NavSim Lab has only the GPS option for GNSS constellation. Please enter "gps" at prompt.'
 gnss = raw_input('Please specify the GNSS constellation ("gps", "glonass", galileo"): ')
 while gnss != 'gps':
     gnss = raw_input('\nPlease specify the GNSS constellation as "gps": ')
 
-# 5. Specify the integration update rate
+# 8. Specify the integration update rate
 freq = input('\nPlease enter the integration rate (GNSS update rate) in Hz: ')
-
-# 6. Select the simulation type
-print '\nNavSim Lab has two simulation types:\n\n' \
-      '     Type #1 == "simulation": performs the flight by the simulating the virtual GNSS constellation and the ' \
-      'virtual IMU model based on the flight trajectory, the vehicle dynamics, the vehicle attitude from the '\
-      'flight data.\n\n' \
-      '     Type #2 == "play back": performs the flight by playing back the entire flight profile in which the GNSS ' \
-      'measurements are calculated using the real ephemeris, the real specific forces and the real angular rates ' \
-      'from the flight data.\n'
-
-sim_type = raw_input('Please select the simulation type by entering either "simulation" or "play back": ')
-while sim_type != 'simulation' and sim_type != 'play back':
-    sim_type = raw_input('\nPlease select the simulation type by entering either "simulation" or "play back": ')
-
-# 7. Specify the simulation mode
-print '\nEach simulation type has two modes:\n\n' \
-      '     Mode #1 == "stand alone": performs either the "loosely coupled" integration ' \
-      'or the "tightly coupled" integration.\n\n' \
-      '     Mode #2 == "dual": performs both the "loosely coupled" integration and ' \
-      'the "tightly coupled" integration simultaneously.\n'
-
-sim_mode = raw_input('Please select the simulation mode by entering either "alone" or "dual": ')
-while sim_mode != 'alone' and sim_mode != 'dual':
-    sim_mode = raw_input('\nPlease select the simulation mode by entering either "alone" or "dual": ')
-
-# 8. Specify the tightness
-if sim_mode == 'alone':
-    print '\nThere are two integration schemes in the "stand-alone" mode:\n\n' \
-          '     Scheme #1 == "Loose": to loosely integrate the INS and the GNSS solutions.\n\n' \
-          '     Scheme #2 == "Tight": to tightly integrate the INS and the GNSS solutions.\n'
-    scheme = raw_input('Specify your choice by entering either "loose" or "tight": ')
-    while scheme != 'loose' and scheme != 'tight':
-        scheme = raw_input('\nSpecify your choice by entering either "loose" or "tight": ')
-elif sim_mode == 'dual':
-    scheme = 'loose'   # default integration scheme
 
 # 9. Specify the random seed
 seed = input('\nPlease choose your random seed int[0, inf): ')
