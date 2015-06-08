@@ -2206,34 +2206,42 @@ def cal_err_ned(est_lat_b, est_lon_b, est_alt_b, est_v_eb_n, est_ctm_b_n, true_l
 '''
 
 
-def ekfsd_ecef_to_lla(lat_b_ref, lon_b_ref, alt_b_ref, rsd_eb_e, vsd_eb_e):
+def ekfsd_ecef_to_lla(lat_b_ref, lon_b_ref, alt_b_ref, pva_eb_e):
 
-    # Earth's radii
+    # Separating the pva vector into:
+    rsd_eb_e = pva_eb_e[0, 0:3].T
+    vsd_eb_e = pva_eb_e[0, 3:6].T
+    euler_sd_eb_e = pva_eb_e[0, 6:9].T
+
+    # Earth's radii using (2.105-106)
     [r_ns, r_ew] = radii_of_curv(lat_b_ref)
 
-    # Jacobian of xyz to lla
+    # Jacobian of xyz to lla using (2.119)
     t_r_p_matrix = np.matrix([[1.0/(r_ns + alt_b_ref),                    0.0,                      0.0],
                               [0.0,                    1.0/(r_ew + alt_b_ref) * np.cos(lat_b_ref),  0.0],
                               [0.0,                                       0.0,                     -1.0]])
 
-    # Calculate ECEF to NED coordinate transformation matrix
+    # Calculate ECEF to NED coordinate transformation matrix using (2.150)
     [c_e_n_matrix, trig] = ecef_to_ned_ctm(lat_b_ref, lon_b_ref, trig='yes')
 
-    # Transform position
-    rsd_eb_n = t_r_p_matrix * c_e_n_matrix * rsd_eb_e
+    # Transform position using (2.118)
+    rsd_eb_l = t_r_p_matrix * c_e_n_matrix * rsd_eb_e
 
     # The down-component error
     term_1 = rsd_eb_e[2, 0] / trig[1]
     term_2 = np.sqrt(rsd_eb_e[0, 0] ** 2 + rsd_eb_e[1, 0] ** 2) / trig[0]
-    rsd_eb_n[2, 0] += term_1 + term_2
+    rsd_eb_l[2, 0] += term_1 + term_2
 
     # ECEF to NED coordinate transformation matrix
-    delta_c_e_n_matrix = ecef_to_ned_ctm(rsd_eb_n[0, 0], rsd_eb_n[1, 0], trig='no')
+    delta_c_e_n_matrix = ecef_to_ned_ctm(rsd_eb_l[0, 0], rsd_eb_l[1, 0], trig='no')
 
-    # Transform velocity
+    # Transform velocity using (2.152)
     vsd_eb_n = delta_c_e_n_matrix * vsd_eb_e
 
-    return rsd_eb_n, vsd_eb_n
+    # Transform attitude using (2.152)
+    euler_sd_eb_n = delta_c_e_n_matrix * euler_sd_eb_e
+
+    return rsd_eb_l, vsd_eb_n, euler_sd_eb_n
 
 # End of Converting Position, Velocity, and CTM from ECEF to NED
 
@@ -3295,7 +3303,7 @@ def gnss_ls_pos_vel(gnss_meas, no_gnss_meas, pred_r_ea_e, pred_v_ea_e):
 
 '''
     ---------------------------------------------------------------------------
-    9. Initialize the State Estimate Covariance Matrix, P for LC_EKF and TC_EKF
+    8. Initialize the State Estimate Covariance Matrix, P for LC_EKF and TC_EKF
     ---------------------------------------------------------------------------
 '''
 
@@ -3334,9 +3342,9 @@ def init_p_matrix(tightness, ekf_config):
 
 
 '''
-    -------------------------------------------------------------------
-    10. Initialize the State Estimate Covariance Matrix, P for Dual EKF
-    -------------------------------------------------------------------
+    ------------------------------------------------------------------
+    9. Initialize the State Estimate Covariance Matrix, P for Dual EKF
+    ------------------------------------------------------------------
 '''
 
 
@@ -3369,9 +3377,9 @@ def init_dual_p_matrix(lc_ekf_config, tc_ekf_config):
 
 
 '''
-    -----------------------------------------------------------
-    11. Calculate Specific Forces and Angular Rates from the IMU
-    -----------------------------------------------------------
+    ------------------------------------------------------------
+    10. Calculate Specific Forces and Angular Rates from the IMU
+    ------------------------------------------------------------
 '''
 
 
@@ -3444,9 +3452,9 @@ def kinematics_ecef(tau_i, ctm_b_e, old_ctm_b_e, v_eb_e, old_v_eb_e, r_eb_e):
 
 
 '''
-    ---------------------------
-    12. Simulating the IMU Model
-    ---------------------------
+    ----------------------------
+    11. Simulating the IMU Model
+    ----------------------------
 '''
 
 
@@ -3496,7 +3504,7 @@ def imu_model(tau_i, true_f_ib_b, true_omega_ib_b, imu_config, old_quant_residua
 
 '''
     -----------------------------------------
-    13. Update Estimated Navigation Solutions
+    12. Update Estimated Navigation Solutions
     -----------------------------------------
 '''
 
@@ -3570,7 +3578,7 @@ def nav_eqs_ecef(tau_i, old_r_eb_e, old_v_eb_e, old_ctm_b_e, f_ib_b, omega_ib_b)
 
 '''
     --------------------------------------------------------------
-    14. Loosely Coupled INS/GNSS EKF Integration in a Single Epoch
+    13. Loosely Coupled INS/GNSS EKF Integration in a Single Epoch
     --------------------------------------------------------------
 '''
 
@@ -3694,7 +3702,7 @@ def lc_ekf_epoch(gnss_r_eb_e, gnss_v_eb_e, tau_s, est_ctm_b_e_old, est_v_eb_e_ol
 
 '''
     ---------------------------------------------------------------
-    15. Main Function to Run the Loosely Coupled INS/GPS EKF Fusion
+    14. Main Function to Run the Loosely Coupled INS/GPS EKF Fusion
     ---------------------------------------------------------------
 '''
 
@@ -3830,12 +3838,12 @@ def lc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
         output_kf_sd[0, i + 1] = np.sqrt(abs(eig_value[i]))
     # End of For Loop
 
-    # Convert the standard deviations to LLA
-    [r_temp, v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, output_kf_sd[0, 1:4].T,
-                                         output_kf_sd[0, 4:7].T)
+    # Convert the standard deviations to NED
+    [r_temp, v_temp, euler_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, output_kf_sd[0, 1:10])
 
     output_kf_sd[0, 1:4] = r_temp.T
     output_kf_sd[0, 4:7] = v_temp.T
+    output_kf_sd[0, 7:10] = euler_temp.T
 
     # 20. Initialize GNSS model timing
     t_last_gnss = old_t
@@ -3973,12 +3981,12 @@ def lc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
             # End of For out_kf_sd update
 
             # Convert the standard deviations to LLA
-            [r_temp, v_temp] = \
-                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, out_kf_sd_new[gnss_epoch - 1, 1:4].T,
-                                  out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+            [r_temp, v_temp, euler_temp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, out_kf_sd_new[gnss_epoch - 1, 1:10])
 
             out_kf_sd_new[gnss_epoch - 1, 1:4] = r_temp.T
             out_kf_sd_new[gnss_epoch - 1, 4:7] = v_temp.T
+            out_kf_sd_new[gnss_epoch - 1, 7:10] = euler_temp.T
 
             output_kf_sd = out_kf_sd_new
 
@@ -4030,7 +4038,7 @@ def lc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
 
 '''
     --------------------------------------------------------------
-    16. Tightly Coupled INS/GNSS EKF Integration in a Single Epoch
+    15. Tightly Coupled INS/GNSS EKF Integration in a Single Epoch
     --------------------------------------------------------------
 '''
 
@@ -4201,7 +4209,7 @@ def tc_ekf_epoch(gnss_meas, no_meas, tau_s, est_ctm_b_e_old, est_v_eb_e_old, est
 
 '''
     ---------------------------------------------------------------
-    17. Main Function to Run the Tightly Coupled INS/GPS EKF Fusion
+    16. Main Function to Run the Tightly Coupled INS/GPS EKF Fusion
     ---------------------------------------------------------------
 '''
 
@@ -4334,11 +4342,11 @@ def tc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
     # End of For Loop
 
     # Convert the standard deviations to LLA
-    [r_temp, v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, output_kf_sd[0, 1:4].T,
-                                         output_kf_sd[0, 4:7].T)
+    [r_temp, v_temp, euler_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, output_kf_sd[0, 1:10])
 
     output_kf_sd[0, 1:4] = r_temp.T
     output_kf_sd[0, 4:7] = v_temp.T
+    output_kf_sd[0, 7:10] = euler_temp.T
 
     # 20. Initialize GNSS model timing
     t_last_gnss = old_t
@@ -4474,12 +4482,12 @@ def tc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
             # End of For out_kf_sd update
 
             # Convert the standard deviations to LLA
-            [r_temp, v_temp] = \
-                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, out_kf_sd_new[gnss_epoch - 1, 1:4].T,
-                                  out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+            [r_temp, v_temp, euler_temp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, out_kf_sd_new[gnss_epoch - 1, 1:10])
 
             out_kf_sd_new[gnss_epoch - 1, 1:4] = r_temp.T
             out_kf_sd_new[gnss_epoch - 1, 4:7] = v_temp.T
+            out_kf_sd_new[gnss_epoch - 1, 7:10] = euler_temp.T
 
             output_kf_sd = out_kf_sd_new
 
@@ -4530,7 +4538,7 @@ def tc_ins_gps_ekf_fusion(simtype, tightness, true_profile, no_t_steps, eul_err_
 
 '''
     ---------------------------------------------
-    18. Main Function to Run the Dual INS/GPS EKF
+    17. Main Function to Run the Dual INS/GPS EKF
     ---------------------------------------------
 '''
 
@@ -4714,11 +4722,11 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
     # End of For Loop
 
     # Convert the standard deviations to LLA
-    [lc_r_temp, lc_v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, lc_output_kf_sd[0, 1:4].T,
-                                               lc_output_kf_sd[0, 4:7].T)
+    [lc_r_temp, lc_v_temp, lc_eul_tmp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, lc_output_kf_sd[0, 1:10])
 
     lc_output_kf_sd[0, 1:4] = lc_r_temp.T
     lc_output_kf_sd[0, 4:7] = lc_v_temp.T
+    lc_output_kf_sd[0, 7:10] = lc_eul_tmp.T
 
     # 21.2 Tightly coupled EKF
     tc_output_kf_sd = np.nan * np.matrix(np.ones((1, 18)))
@@ -4729,11 +4737,11 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
     # End of For Loop
 
     # Convert the standard deviations to LLA
-    [tc_r_temp, tc_v_temp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, tc_output_kf_sd[0, 1:4].T,
-                                               tc_output_kf_sd[0, 4:7].T)
+    [tc_r_temp, tc_v_temp, tc_eul_tmp] = ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, tc_output_kf_sd[0, 1:10])
 
     tc_output_kf_sd[0, 1:4] = tc_r_temp.T
     tc_output_kf_sd[0, 4:7] = tc_v_temp.T
+    tc_output_kf_sd[0, 7:10] = tc_eul_tmp.T
 
     # 22. Initialize GNSS model timing
     t_last_gnss = old_t
@@ -4910,12 +4918,12 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
             # End of For out_kf_sd update
 
             # Convert the standard deviations to LLA
-            [lc_r_temp, lc_v_temp] = \
-                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, lc_out_kf_sd_new[gnss_epoch - 1, 1:4].T,
-                                  lc_out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+            [lc_r_temp, lc_v_temp, lc_eul_tmp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, lc_out_kf_sd_new[gnss_epoch - 1, 1:10])
 
             lc_out_kf_sd_new[gnss_epoch - 1, 1:4] = lc_r_temp.T
             lc_out_kf_sd_new[gnss_epoch - 1, 4:7] = lc_v_temp.T
+            lc_out_kf_sd_new[gnss_epoch - 1, 7:10] = lc_eul_tmp.T
 
             lc_output_kf_sd = lc_out_kf_sd_new
 
@@ -4930,12 +4938,12 @@ def dual_ins_gps_ekf_fusion(simtype, true_profile, no_t_steps, eul_err_nb_n, imu
             # End of For out_kf_sd update
 
             # Convert the standard deviations to LLA
-            [tc_r_temp, tc_v_temp] = \
-                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, tc_out_kf_sd_new[gnss_epoch - 1, 1:4].T,
-                                  tc_out_kf_sd_new[gnss_epoch - 1, 4:7].T)
+            [tc_r_temp, tc_v_temp, tc_eul_tmp] = \
+                ekfsd_ecef_to_lla(true_lat_b, true_lon_b, true_alt_b, tc_out_kf_sd_new[gnss_epoch - 1, 1:10])
 
             tc_out_kf_sd_new[gnss_epoch - 1, 1:4] = tc_r_temp.T
             tc_out_kf_sd_new[gnss_epoch - 1, 4:7] = tc_v_temp.T
+            tc_out_kf_sd_new[gnss_epoch - 1, 7:10] = tc_eul_tmp.T
 
             tc_output_kf_sd = tc_out_kf_sd_new
 
